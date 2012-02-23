@@ -14,8 +14,15 @@ end
 puts "Starting..."
 
 File.open(ARGV[0]) do |file|
-	_, time, _, _ = file.gets, file.gets, file.gets, file.gets
-	puts time
+	while true do
+		id, time, _, _ = file.gets, file.gets, file.gets, file.gets
+		break if id.nil? # reached EOF
+
+		start, stop = time.split(' --> ')
+		if start > stop
+			puts "subtitle ##{id.strip} is invalid: #{time}"
+		end
+	end
 end
 
 puts "Done."
