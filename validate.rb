@@ -57,4 +57,4 @@ class SubtitlesValidator
 
 end
 
-SubtitlesValidator.call ARGV
+SubtitlesValidator.call ARGV if __FILE__ == $0
