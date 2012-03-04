@@ -16,50 +16,50 @@ eos
 
 
 describe SubtitlesValidator do
-	let(:validator) { SubtitlesValidator.new }
+  let(:validator) { SubtitlesValidator.new }
 
-	before do
-		validator.stub(:file_data).and_return(TEST_DATA)
-		@hash = validator.parse_data
-		validator.validate
-	end
+  before do
+    validator.stub(:file_data).and_return(TEST_DATA)
+    @hash = validator.parse_data
+    validator.validate
+  end
 
-	context "parsing" do
+  context "parsing" do
 
-		it "should build a hash with a key for each subtitle" do
-			@hash.class.should == Hash
-			@hash.size.should == 3
-		end
+    it "should build a hash with a key for each subtitle" do
+      @hash.class.should == Hash
+      @hash.size.should == 3
+    end
 
-		it "should parse the start and stop markers" do
-			@hash.keys.first.should == "1"
-			@hash["1"][:start].should == "00:00:06,244"
-			@hash["1"][:stop].should == "00:00:09,004"
+    it "should parse the start and stop markers" do
+      @hash.keys.first.should == "1"
+      @hash["1"][:start].should == "00:00:06,244"
+      @hash["1"][:stop].should == "00:00:09,004"
 
-			@hash.keys.last.should == "3"
-			@hash["3"][:start].should == "00:00:13,000"
-			@hash["3"][:stop].should == "00:00:12,777"
-		end
-	end
+      @hash.keys.last.should == "3"
+      @hash["3"][:start].should == "00:00:13,000"
+      @hash["3"][:stop].should == "00:00:12,777"
+    end
+  end
 
-	context "validating" do
+  context "validating" do
 
-		before do 
-			@errors = validator.errors
-		end
+    before do 
+      @errors = validator.errors
+    end
 
-		it "should detect a total of 2 errors" do
-			@errors.size.should == 2
-		end
+    it "should detect a total of 2 errors" do
+      @errors.size.should == 2
+    end
 
-		it "should detect an invalid subtitle" do
-			@errors[0].should match(/subtitle #3 is invalid/)
-		end
+    it "should detect an invalid subtitle" do
+      @errors[0].should match(/subtitle #3 is invalid/)
+    end
 
-		it "should detect an overlapping subtitle" do
-			@errors[1].should match(/subtitle #3 is overlapping/)
-		end
+    it "should detect an overlapping subtitle" do
+      @errors[1].should match(/subtitle #3 is overlapping/)
+    end
 
-	end
+  end
 
 end
