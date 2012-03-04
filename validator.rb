@@ -3,15 +3,22 @@
 class SubtitlesValidator
 
 	def self.call args
-		puts "Starting..."
-		sv = SubtitlesValidator.new args
+		sv = SubtitlesValidator.new
+		sv.validate_usage args
 		sv.read_file
-		sv.group_by_4
-		sv.does
-		puts "Done."
+		sv.parse_data
+		sv.validate
+		sv.show_errors
 	end
 
-	def initialize args
+	attr_reader :file_data
+	attr_reader :errors
+
+	def initialize
+		@errors = []
+	end
+
+	def validate_usage args
 
 		if args.length != 1 
 			$stderr.puts "Usage: validator.sh subtitles_file.srt"
@@ -30,29 +37,49 @@ class SubtitlesValidator
 		@file_data = File.open(@filename).read
 	end
 
-	def group_by_4
-		# @file_data.split("\n").
+	def parse_data
+		lines_grouped = by_4
+
+		@subtitles = {}
+		lines_grouped.each do |lines|
+			start, stop = lines[1].split(' --> ').map(&:strip)
+			subtitle = lines[2]
+			@subtitles[lines[0]] = {:start => start, :stop => stop, :subtitle => subtitle}
+		end
+		@subtitles
 	end
 
-	def does
+	def by_4
+		lines = file_data.split("\n")
+		while lines.size != 0 do
+			(by_4_lines ||= []) << lines.slice!(0,4)
+		end
+		by_4_lines
+	end
+
+	def validate
 		previous_stop = "00:00:00,000" # smallest possible value
 
-		File.open(@filename) do |file|
-			while true do
-				id, time, _, _ = file.gets, file.gets, file.gets, file.gets
-				break if id.nil? # reached EOF
-
-				start, stop = time.split(' --> ').map(&:strip)
-				if start > stop
-					puts "subtitle ##{id.strip} is invalid: #{time}"
-				end
-
-				if previous_stop > start
-					puts "subtitle ##{id.strip} is overlapping with the previous one."
-				end
-				previous_stop = stop
+		@subtitles.each do |array|
+			id = array[0]
+			markers = array[1]
+			if markers[:start] > markers[:stop]
+				@errors << "subtitle ##{id} is invalid (start > stop)"
 			end
+			if previous_stop > markers[:start]
+				@errors << "subtitle ##{id} is overlapping with the previous one."
+			end
+			previous_stop = markers[:stop]
 		end
+	end
+
+	def show_errors
+		if @errors.any?
+			@errors.map{|e| puts e}
+		else
+			puts "No errors found."
+		end
+		puts "Done."
 	end
 
 end
