@@ -4,11 +4,9 @@ class SubtitlesValidator
 
   def self.call args
     sv = SubtitlesValidator.new
-    sv.validate_usage args
-    sv.read_file
-    sv.parse_data
-    sv.validate
-    sv.show_errors
+    sv.parse_args args
+    sv.validate_subtitles
+    sv.display_results
   end
 
   attr_reader :file_data
@@ -18,7 +16,7 @@ class SubtitlesValidator
     @errors = []
   end
 
-  def validate_usage args
+  def parse_args args
 
     if args.length != 1 
       $stderr.puts "Usage: validator.sh subtitles_file.srt"
@@ -33,8 +31,19 @@ class SubtitlesValidator
     @filename = args[0]
   end
 
-  def read_file
-    @file_data = File.open(@filename).read
+  def validate_subtitles
+    read_file
+    parse_data
+    validate
+  end
+
+  def display_results
+    if @errors.any?
+      @errors.map{|e| puts e}
+    else
+      puts "No errors found."
+    end
+    puts "Done."
   end
 
   def parse_data
@@ -47,14 +56,6 @@ class SubtitlesValidator
       @subtitles[lines[0]] = {:start => start, :stop => stop, :subtitle => subtitle}
     end
     @subtitles
-  end
-
-  def by_4
-    lines = file_data.split("\n")
-    while lines.size != 0 do
-      (by_4_lines ||= []) << lines.slice!(0,4)
-    end
-    by_4_lines
   end
 
   def validate
@@ -73,15 +74,22 @@ class SubtitlesValidator
     end
   end
 
-  def show_errors
-    if @errors.any?
-      @errors.map{|e| puts e}
-    else
-      puts "No errors found."
+  private
+
+  def read_file
+    @file_data = File.open(@filename).read
+  end
+
+  def by_4
+    lines = file_data.split("\n")
+    while lines.size != 0 do
+      (by_4_lines ||= []) << lines.slice!(0,4)
     end
-    puts "Done."
+    by_4_lines
   end
 
 end
+
+########################################################################
 
 SubtitlesValidator.call ARGV if __FILE__ == $0
