@@ -13,7 +13,6 @@ class SubtitlesValidator
   attr_reader :errors
 
   def parse_args args
-
     if args.length != 1 
       $stderr.puts "Usage: validator.sh subtitles_file.srt"
       exit 1
