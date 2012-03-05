@@ -9,7 +9,6 @@ class SubtitlesValidator
     sv.display_results
   end
 
-  attr_reader :file_data
   attr_reader :errors
 
   def parse_args args
@@ -27,8 +26,9 @@ class SubtitlesValidator
   end
 
   def validate_subtitles
-    @file_data = read_file
-    validate(parse_data)
+    file_data = read_file
+    subtitles = parse_data(file_data)
+    validate(subtitles)
   end
 
   def display_results
@@ -40,8 +40,8 @@ class SubtitlesValidator
     puts "Done."
   end
 
-  def parse_data
-    lines_grouped = by_4
+  def parse_data file_data
+    lines_grouped = by_4(file_data)
 
     subtitles = {}
     lines_grouped.each do |lines|
@@ -75,7 +75,7 @@ class SubtitlesValidator
     File.open(@filename).read
   end
 
-  def by_4
+  def by_4 file_data
     lines = file_data.split("\n")
     while lines.size != 0 do
       (by_4_lines ||= []) << lines.slice!(0,4)

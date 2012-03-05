@@ -19,8 +19,7 @@ describe SubtitlesValidator do
   let(:validator) { SubtitlesValidator.new }
 
   before do
-    validator.stub(:file_data).and_return(TEST_DATA)
-    @hash = validator.parse_data
+    @hash = validator.parse_data(TEST_DATA)
   end
 
   context "parsing" do
