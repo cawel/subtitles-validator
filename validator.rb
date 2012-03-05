@@ -12,10 +12,6 @@ class SubtitlesValidator
   attr_reader :file_data
   attr_reader :errors
 
-  def initialize
-    @errors = []
-  end
-
   def parse_args args
 
     if args.length != 1 
@@ -37,7 +33,7 @@ class SubtitlesValidator
   end
 
   def display_results
-    if @errors.any?
+    if @errors && !@errors.empty?
       @errors.map{|e| puts e}
     else
       puts "No errors found."
@@ -59,6 +55,7 @@ class SubtitlesValidator
 
   def validate subtitles
     previous_stop = "00:00:00,000" # smallest possible value
+    @errors = []
 
     subtitles.each do |array|
       id = array[0]
