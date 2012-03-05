@@ -21,7 +21,6 @@ describe SubtitlesValidator do
   before do
     validator.stub(:file_data).and_return(TEST_DATA)
     @hash = validator.parse_data
-    validator.validate
   end
 
   context "parsing" do
@@ -45,6 +44,7 @@ describe SubtitlesValidator do
   context "validating" do
 
     before do 
+      validator.validate @hash
       @errors = validator.errors
     end
 

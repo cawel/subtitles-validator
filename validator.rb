@@ -33,8 +33,7 @@ class SubtitlesValidator
 
   def validate_subtitles
     read_file
-    parse_data
-    validate
+    validate(parse_data)
   end
 
   def display_results
@@ -49,19 +48,19 @@ class SubtitlesValidator
   def parse_data
     lines_grouped = by_4
 
-    @subtitles = {}
+    subtitles = {}
     lines_grouped.each do |lines|
       start, stop = lines[1].split(' --> ').map(&:strip)
       subtitle = lines[2]
-      @subtitles[lines[0]] = {:start => start, :stop => stop, :subtitle => subtitle}
+      subtitles[lines[0]] = {:start => start, :stop => stop, :subtitle => subtitle}
     end
-    @subtitles
+    subtitles
   end
 
-  def validate
+  def validate subtitles
     previous_stop = "00:00:00,000" # smallest possible value
 
-    @subtitles.each do |array|
+    subtitles.each do |array|
       id = array[0]
       markers = array[1]
       if markers[:start] > markers[:stop]
