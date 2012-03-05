@@ -27,7 +27,7 @@ class SubtitlesValidator
   end
 
   def validate_subtitles
-    read_file
+    @file_data = read_file
     validate(parse_data)
   end
 
@@ -72,7 +72,7 @@ class SubtitlesValidator
   private
 
   def read_file
-    @file_data = File.open(@filename).read
+    File.open(@filename).read
   end
 
   def by_4
